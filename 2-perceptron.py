@@ -19,3 +19,5 @@ def AND(x1, x2):
 		return 1
 
 print AND (0, 1)
+
+print "Hello world, a wonderful world\nIm so glad to be here"
