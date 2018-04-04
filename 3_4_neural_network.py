@@ -80,4 +80,4 @@ x = np.array([1.0, 0.5])
 y = forward(network, x)
 print(y)
 
-print forward(network, x)
+print(forward(network, x))
