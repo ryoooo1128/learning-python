@@ -1,8 +1,8 @@
 from os import path, pardir
 from PIL import Image
-import mnist
+import mnist #mnist.pyをインポート
 import numpy as np
-#import 3_4_neural_network
+#3_4_neural_networkをインポート(-.,が含まれる場合も利用可)
 module = __import__("3_4_neural_network")
 
 
@@ -47,4 +47,11 @@ def predict(network, x):
 	return(y)
 
 
+x, t = get_data()
+network = init_network()
+
+accuracy_cnt = 0
+for i in range(len(x)):
+	y = predict(network, x[i])
+	p = np.argmax(y)
 
