@@ -1,17 +1,17 @@
 import numpy as np
 
-
-
+#シグモイド関数
 def sigmoid(x):
 	return 1 / (1 + np.exp(-x))
-
+#出力層に形式上用いる　なくても変わらない
 def identity_function(x):
 	return x
 
 
-
 X = np.array([1.0, 0.5])
 
+#多層構造ニューラルネットワーク2
+#入力層
 W1 = np.array([[0.1, 0.3, 0.5], [0.2, 0.4, 0.6]])
 B1 = np.array([0.1, 0.2, 0.3])
 
@@ -25,6 +25,8 @@ print(A1)
 Z1 = sigmoid(A1)
 print(Z1)
 
+
+#第二層目
 W2 = np.array([[0.1, 0.4], [0.2, 0.5], [0.3, 0.6]])
 B2 = np.array([0.1, 0.2])
 
@@ -35,6 +37,7 @@ Z2 = sigmoid(A2)
 print(Z2)
 
 
+#出力装
 W3 = np.array([[0.1, 0.3], [0.2, 0.4]])
 B3 = np.array([0.1, 0.2])
 
@@ -48,7 +51,7 @@ print(Y)
 
 
 
-
+#簡単に
 def init_network():
 	network = {} 
 
