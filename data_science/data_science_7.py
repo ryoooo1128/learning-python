@@ -1,5 +1,6 @@
 from probability import normal_cdf, inverse_normal_cdf
 import math, random
+import matplotlib as plt
 
 
 #コインが歪んでいる確率
@@ -59,7 +60,7 @@ print(normal_two_sided_bounds(0.95, mu_0, sigma_0))#(469, 531)
 lo, hi = normal_two_sided_bounds(0.95, mu_0, sigma_0)
 
 #p=5.5%になる歪んだコインだった場合
-mu_1, sigma_1 = normal_approximation_to_binomial(1000, 0,55)#平均と標準偏差
+mu_1, sigma_1 = normal_approximation_to_binomial(1000, 0.55)#平均と標準偏差
 type_2_probablity = normal_probablity_between(lo, hi, mu_1, sigma_1)#第2種の過誤が起こる確率
 power = 1 - type_2_probablity
 
@@ -89,16 +90,16 @@ print(two_sided_p_value(529.5, mu_0, sigma_0))#0.062：棄却しない
 以下は、上記の検定方法の実際のシミュレーション
 '''
 extreme_value_count = 0
-for _ in range(100000)
+for _ in range(100000):
 	num_heads = sum(1 if random.random() < 0.5 else 0#1000回コインを投げて
-					for _ range(1000))				 #表が出る回数を数える
+					for _ in range(1000))			 #表が出る回数を数える
 	if num_heads >= 530 or num_heads <= 470:		 #そのうち極端な値が出た回数を
 		extreme_value_count += 1					 #数える
 
 print(extreme_value_count / 100000)#0.062
 
 #x=532の時
-print(two_sided_p_value(531.5, mu_0, sigma_0))
+print(two_sided_p_value(531.5, mu_0, sigma_0))#0.46
 
 
 #別バージョン
@@ -106,13 +107,76 @@ upper_p_value = normal_plobablity_above
 lower_p_value = normal_probablity_below
 
 #x=524の時
-pritn(upper_p_value(524.5, mu_0, sigma_0))#0.061
+print(upper_p_value(524.5, mu_0, sigma_0))#0.061
 #x=527の時
 print(upper_p_value(526.5, mu_0, sigma_0))#0.047
 
 
 
 
-#信頼区間
+#信頼区間:pの値がわからない場合(試行1000回・525回表) 正規分布の区間に入っているかどうかで判断する
+#ベルヌーイ変数の平均値は平均pと標準偏差の正規分布に従うため以下が成り立つ
+#math.sqrt(p * (1 - p) / 1000)
 
+p_hat = 525 / 1000
+mu = p_hat
+sigma = math.sqrt(p_hat * (1 - p_hat) / 1000)#0.0158
+
+print(normal_two_sided_bounds(0.95, mu, sigma))#0.4940, 0.5560:信頼区間
+
+
+
+#pハッキング：推定のp値を使って外れ値を取り除いて優位な結果を得ること
+def run_experiment():
+	return[random.random() < 0.5 for _ in range(1000)]#コインを1000回投げて表が出たらTrue裏ならFalseとする
+
+def reject_faireness(experiment):#有意水準5%を用いる	
+	num_heads = len([flip for flip in experiment if flip])
+	return num_heads < 469 or num_heads > 531
+
+random.seed(0)
+
+experiments = [run_experiment() for _ in range(1000)]
+num_rejection = len([experiment for experiment in experiments if reject_faireness(experiment)])
+
+print(num_rejection)#46
+
+#事例
+#N人が見てn人がクリックしたとして、Nがものすごく大きいと仮定した時、n/Nは正規分布に近似する
+#よってA=Bを棄却できる
+def estimated_paramaters(N, n):
+	p = n / N
+	sigma = math.sqrt(p * (1 - p) / N)
+	return p, sigma
+
+#Aの広告とBの広告が独立なら、Bの確率-Aの確率も正規分布に従う
+def a_b_test_statistics(N_A, n_A, N_B, n_B):
+	p_A, sigma_A = estimated_paramaters(N_A, n_A)
+	p_B, sigam_B = estimated_paramaters(N_B, n_B)
+	return (p_B - p_A) / math.sqrt(sigma_A ** 2 + sigam_B **2)
+
+z = a_b_test_statistics(1000, 200, 1000, 180)#-1.14
+print(z)
+#AとBが同じ時に、この差が起きる確率
+print(two_sided_p_value(z))#0.254：棄却できない
+
+z = a_b_test_statistics(1000, 200, 1000, 150)#-2.94
+print(z)
+print(two_sided_p_value(z))#0.003：帰無仮説になる可能性がかなり低いので、棄却できる
+
+
+
+#ベイズ推定：未知の確率(事後分布)をベイズの定理と事前分布を用いて推定する
+#ベータ分布：事前分布が未知の場合によく使われる　以下その求め方
+def B(alpha, beta):#正規化する(確率の総和が１になるようにする)
+	return math.gamma(alpha) * math.gamma(beta) / math.gamma(alpha + beta)
+
+def beta_pdf(x, alpha, beta):#ベータ分布
+	if x < 0 or x >1:
+		return 0
+	return x ** (alpha - 1) * (1 - x) ** (beta - 1) / B(alpha, beta)
+#一般的にグラフの中心は= alpha/(alpha+beta)となる
+
+#はじめはalphaもbetaも１として、表または裏が出るたびに加えていくことでベイズ推定を行う
+#事後分布もベータ分布になる
 
