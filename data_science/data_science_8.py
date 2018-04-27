@@ -70,7 +70,7 @@ while True:
 #gradient_fn：その勾配
 def minimmize_batch(target_fn, gradient_fn, theta_0, tolerance = 0.0000001):
 
-	step_sizes = [100, 10, 1, 0.1, 0.01, 0.001, 0,0001, 0,00001]
+	step_sizes = [100, 10, 1, 0.1, 0.01, 0.001, 0.0001, 0.00001]
 
 	#step関数で出てきたv_iを当てはめてみた時に返す傾き　stepを試した時に、エラーが発生しないか確認するための関数
 	def safe(f):
