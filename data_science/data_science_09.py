@@ -84,7 +84,7 @@ with open('email_adress.txt', 'r') as f:
 import csv#カンマやタブでファイルが区切られている場合に使う
 #日本語が含まれる場合は、文字化け防止でopen('japan.csv', encoding='UTF-8')と文字コードを指定する
 
-with open('tab_delimited_stock_prices.txt', 'r') as f:
+with open('__tab_delimited_stock_prices.txt', 'r') as f:
 	reader = csv.reader(f, delimiter = '\t')
 	for row in reader:
 		data = row[0]
@@ -93,7 +93,7 @@ with open('tab_delimited_stock_prices.txt', 'r') as f:
 		process(data, symbol, closing_price)
 
 
-with open('colon_delimited_stock_prices.txt', 'r') as f:
+with open('__colon_delimited_stock_prices.txt', 'r') as f:
 	reader = csv.DictReader(f, delimiter = ':')
 	for row in reader:
 		data = row["date"]
@@ -104,7 +104,7 @@ with open('colon_delimited_stock_prices.txt', 'r') as f:
 
 today_prices = { 'AAPL' : 90.91, 'MSFT' : 41.68, 'FB' : 64.5 }
 
-with open('comma_delimited_stock_prices.txt', 'w') as f:
+with open('__comma_delimited_stock_prices.txt', 'w') as f:
 	writer = csv.writer(f, delimiter = ',')
 	for stock, price in today_prices.items():
 		writer.writerow([stock, price])

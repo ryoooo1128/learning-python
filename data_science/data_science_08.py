@@ -1,5 +1,5 @@
 import random
-import linear_algebra
+import __linear_algebra
 
 
 #勾配下降法:
