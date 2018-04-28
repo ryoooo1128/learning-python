@@ -58,9 +58,7 @@ AccessTokenSecret:
 #Search API：最近の一握りのツイートの結果を返す
 from twython import Twython
 
-#twitter = Twython(CONSUMER_KEY, CONSUMER_SECRET)
-twitter = Twython("PHMPYHD8zFgK6jK1jXscgLnFy", "AvefBrRTXShkS83iYgKCdsr2EAghWdK0Sd0yq8CBfVLZe6IHdd")
-
+twitter = Twython(CONSUMER_KEY, CONSUMER_SECRET)
 
 #”data science”を含むツイートを検索する
 for status in twitter.search(q = '"data science"')["statuses"]:
@@ -93,9 +91,7 @@ class MyStreamer(TwythonStreamer):
 		print(status_code, data)
 		self.disconnect()
 
-#stream = MyStreamer(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-stream = MyStreamer("PHMPYHD8zFgK6jK1jXscgLnFy", "AvefBrRTXShkS83iYgKCdsr2EAghWdK0Sd0yq8CBfVLZe6IHdd",
-					"983868618105536512-sHxOXWeBtKxNfFCsK2nyf25Oyq21qUe", "IcKvQMpi3GhEz9Mrz29QP9xNoRrTmDkBOTachs763xCo5")
+stream = MyStreamer(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
 #ツイートからキーワード'data'を含むものを収集
 stream.statuses.filter(track = "data")
