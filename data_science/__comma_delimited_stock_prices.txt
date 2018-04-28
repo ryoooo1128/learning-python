@@ -1,3 +1,5 @@
 FB,64.5
 MSFT,41.68
 AAPL,90.91
+
+#data_science_09で使用
