@@ -69,6 +69,11 @@ def get_year(book):#dateの値はNovember 2014のようになっている
 year_counts = collections.Counter(get_year(book) for book in books
 								 if get_year(book) <= 2018)
 
+
+
+
+
+#グラフ化
 import matplotlib.pyplot as plt
 years = sorted(year_counts)
 book_counts = [year_counts[year] for year in years]
