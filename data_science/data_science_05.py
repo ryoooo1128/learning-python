@@ -58,12 +58,12 @@ plt.show()
 num_points = len(num_friends)	#204
 
 
-#最大値と最小値
+#最大値/最小値
 largest_value = max(num_friends)	#100
 smallest_value = min(num_friends)	#1
 
 
-#ソートを利用
+#ソートを利用した方法
 sorted_value = sorted(num_friends)
 smallest_value = sorted_value[0]	#1
 second_smallest_value = sorted_value[1]	#1

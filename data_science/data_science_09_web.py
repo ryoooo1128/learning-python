@@ -1,6 +1,48 @@
-import sys, re
+#Webスクレイピング
+
+import sys, re, requests
 from bs4 import BeautifulSoup
-import requests
+from time import sleep
+
+
+
+
+#HTMLとその解析
+#pythonに組み込まれてるものは寛容でないためインストール
+#htmlパーサー：html5lib
+#httpリクエスト生成機能ライブラリ：requests
+#htmlからデータを取り出すツール：beautiful soup4.4.0
+
+html = requests.get("http://www.example.com").text
+soup = BeautifulSoup(html, 'html5lib')#beautifulsoupを使うためにhtml文章を渡す
+
+first_paragraph = soup.find('p')#soup.pでも可
+first_paragraph_text = soup.p.text
+first_paragraph_words = soup.p.text.spilt()
+
+#辞書として扱うことで属性にアクセスする
+first_paragraph_id = soup.p['id']#idがなければKeyError
+first_paragraph_id2 = soup.p.get('id')#idがなければNone
+
+#複数のタグを取り出す
+all_paragraphs = soup.find_all('p')#soup('p')でも可
+paragraphs_with_ids = [p for p in soup('p') if p.get('id')]
+
+#特定のクラスを取り出す
+important_paragraphs = soup('p', {'class' : 'important'})
+important_paragraphs2 = soup('p', 'important')
+important_paragraphs3 = [p for p in soup('p')
+						if 'important' in p.get('class', [])]
+
+#組み合わせる
+#<div>内の<span>を取り出す
+spans_inside_divs = [span
+					for div in soup('div')
+					for span in soup('span')]
+
+
+
+
 
 
 #事例1
@@ -45,11 +87,11 @@ def book_info(td):#tdタグに書籍のデータが入っているため、取�
 
 
 
-from bs4 import BeautifulSoup
-import requests
-from time import sleep
-base_url = "http://shop.oreilly.com/category/browse-subjects/data.do?sortby=publicationData&page="
 
+
+
+#実践
+base_url = "http://shop.oreilly.com/category/browse-subjects/data.do?sortby=publicationData&page="
 
 books =[]
 NUM_PAGES = 30
@@ -63,17 +105,18 @@ for page_num in range(1, NUM_PAGES + 1):
 		if not is_video(td):
 			books.append(book_info(td))
 
+sleep()
+
+
+
+
+#グラフ化
 def get_year(book):#dateの値はNovember 2014のようになっている
 	return int(book["date"].split()[1])
 
 year_counts = collections.Counter(get_year(book) for book in books
 								 if get_year(book) <= 2018)
 
-
-
-
-
-#グラフ化
 import matplotlib.pyplot as plt
 years = sorted(year_counts)
 book_counts = [year_counts[year] for year in years]

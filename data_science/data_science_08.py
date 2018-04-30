@@ -37,8 +37,8 @@ def plot_estimated_derivative():
 def partial_difference_quotient(f, v, i, h):
 	w = [v_j + (h if j == i else o)#i番目だけhを加える
 		for j, v_j in enumerate(v)]#インデックスつきベクトルを得る
-
 	return (f(w) - f(v) / h)
+
 #勾配(つまり接線)を求める
 def estimate_gradient(f, v, h = 0.00001):
 	return [partial_difference_quotient(f, v, i, h)
@@ -53,16 +53,19 @@ def step(v, direction, step_size):
 def sun_of_squares_gradient(v):#sum_of_squaresの勾配
 	return [2 * v_i for v_j in v]
 
-v = [random.randint(-10, 10) for i in range(3)]#任意の点を定める：３つ-10から10の間で整数を返す
+def minimize_step():
+	v = [random.randint(-10, 10) for i in range(3)]#任意の点を定める：３つ-10から10の間で整数を返す
 
-tolerance = 0.0000001#限りなく０に近づく限界
+	tolerance = 0.0000001#限りなく０に近づく限界
 
-while True:
-	gradient = sum_of_squares_gradient(v)#vにおける勾配
-	next_v = step(v, gradient, -0.01)#vを-0.01移動
-	if linear_algebra.distance(next_v, v) < tolerance:
-		break
-	v = next_v
+	while True:
+		gradient = sum_of_squares_gradient(v)#vにおける勾配
+		next_v = step(v, gradient, -0.01)#vを-0.01移動
+		if linear_algebra.distance(next_v, v) < tolerance:
+			break
+		v = next_v
+
+	return v
 
 
 #移動量を最適化する
@@ -150,5 +153,4 @@ def minimize_stochastic(target_fn, gradient_fn, x, y, theta_0, alpha_0 = 0.01):
 
 def maximize_stochastic(target_fn, x, y, theta_0, alpha_0 = 0.01):
 	return minimize_stochastic(negate(target_fn), negate_all(gradient_fn), x, y, theta_0, alpha_0)
-
 

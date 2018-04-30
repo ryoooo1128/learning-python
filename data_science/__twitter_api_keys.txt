@@ -1,8 +1,0 @@
-#twitter api keys
-(Consumer_Key, Consumer_Secret, Access_Token, Access_Token_Secret)
-
-=("PHMPYHD8zFgK6jK1jXscgLnFy",
-  "AvefBrRTXShkS83iYgKCdsr2EAghWdK0Sd0yq8CBfVLZe6IHdd",
-  "983868618105536512-sHxOXWeBtKxNfFCsK2nyf25Oyq21qUe",
-  "IcKvQMpi3GhEz9Mrz29QP9xNoRrTmDkBOTachs763xCo5")
-)

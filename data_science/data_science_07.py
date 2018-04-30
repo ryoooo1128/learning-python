@@ -51,6 +51,8 @@ def normal_two_sided_bounds(probability, mu = 0, sigma = 1):
 mu_0, sigma_0 = normal_approximation_to_binomial(1000, 0.5)
 
 
+
+
 #検定力
 #有意水準に5％を使用した場合の範囲:つまり第1種の過誤が5％の確率で起こる
 print(normal_two_sided_bounds(0.95, mu_0, sigma_0))#(469, 531)
@@ -65,8 +67,6 @@ type_2_probablity = normal_probablity_between(lo, hi, mu_1, sigma_1)#第2種の�
 power = 1 - type_2_probablity
 
 print(power)#0.887
-
-
 
 
 #p<=0.5、有意水準5％の場合：上の部分のみ調べる
@@ -84,22 +84,24 @@ def two_sided_p_value(x, mu = 0, sigma = 1):
 
 
 #x=530:表が530回出た時の検定：それがp=0.5である可能性
-print(two_sided_p_value(529.5, mu_0, sigma_0))#0.062：棄却しない
+two_sided_p_value(529.5, mu_0, sigma_0)#0.062：棄却しない
 '''
 ここでは「連続性補正」で530より精度の上がる529.5を利用した
 以下は、上記の検定方法の実際のシミュレーション
 '''
-extreme_value_count = 0
-for _ in range(100000):
-	num_heads = sum(1 if random.random() < 0.5 else 0#1000回コインを投げて
-					for _ in range(1000))			 #表が出る回数を数える
-	if num_heads >= 530 or num_heads <= 470:		 #そのうち極端な値が出た回数を
-		extreme_value_count += 1					 #数える
 
-print(extreme_value_count / 100000)#0.062
+def count_extreme_value():
+	extreme_value_count = 0
+	for _ in range(100000):
+		num_heads = sum(1 if random.random() < 0.5 else 0#1000回コインを投げて
+						for _ in range(1000))			 #表が出る回数を数える
+		if num_heads >= 530 or num_heads <= 470:		 #そのうち極端な値が出た回数を
+			extreme_value_count += 1					 #数える
+
+	print(extreme_value_count / 100000)#0.062
 
 #x=532の時
-print(two_sided_p_value(531.5, mu_0, sigma_0))#0.46
+two_sided_p_value(531.5, mu_0, sigma_0)#0.46
 
 
 #別バージョン
@@ -107,11 +109,9 @@ upper_p_value = normal_plobablity_above
 lower_p_value = normal_probablity_below
 
 #x=524の時
-print(upper_p_value(524.5, mu_0, sigma_0))#0.061
+upper_p_value(524.5, mu_0, sigma_0)#0.061
 #x=527の時
-print(upper_p_value(526.5, mu_0, sigma_0))#0.047
-
-
+upper_p_value(526.5, mu_0, sigma_0)#0.047
 
 
 #信頼区間:pの値がわからない場合(試行1000回・525回表) 正規分布の区間に入っているかどうかで判断する
@@ -126,6 +126,9 @@ print(normal_two_sided_bounds(0.95, mu, sigma))#0.4940, 0.5560:信頼区間
 
 
 
+
+
+
 #pハッキング：推定のp値を使って外れ値を取り除いて優位な結果を得ること
 def run_experiment():
 	return[random.random() < 0.5 for _ in range(1000)]#コインを1000回投げて表が出たらTrue裏ならFalseとする
@@ -134,12 +137,15 @@ def reject_faireness(experiment):#有意水準5%を用いる
 	num_heads = len([flip for flip in experiment if flip])
 	return num_heads < 469 or num_heads > 531
 
+
 random.seed(0)
 
 experiments = [run_experiment() for _ in range(1000)]
 num_rejection = len([experiment for experiment in experiments if reject_faireness(experiment)])
 
 print(num_rejection)#46
+
+
 
 #事例
 #N人が見てn人がクリックしたとして、Nがものすごく大きいと仮定した時、n/Nは正規分布に近似する
@@ -163,6 +169,8 @@ print(two_sided_p_value(z))#0.254：棄却できない
 z = a_b_test_statistics(1000, 200, 1000, 150)#-2.94
 print(z)
 print(two_sided_p_value(z))#0.003：帰無仮説になる可能性がかなり低いので、棄却できる
+
+
 
 
 
