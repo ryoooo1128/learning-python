@@ -1,3 +1,6 @@
+#data_science_04.pyのデータ
+
+
 import re, math, random # regexes, math functions, random numbers
 import matplotlib.pyplot as plt # pyplot
 from collections import defaultdict, Counter
