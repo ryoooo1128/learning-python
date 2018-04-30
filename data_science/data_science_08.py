@@ -1,5 +1,5 @@
 import random
-import __linear_algebra
+import data_science_04
 
 
 #勾配下降法:

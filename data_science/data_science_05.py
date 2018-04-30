@@ -3,8 +3,10 @@ import numpy as np
 import math
 from collections import Counter
 
-
 #統計
+
+
+#データ
 num_friends = [100,49,41,40,25,21,21,19,19,18,18,16,15,15,15,15,
 14,14,13,13,13,13,12,12,11,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
 9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,8,8,8,8,8,8,8,8,8,8,8,8,8,
@@ -36,47 +38,41 @@ daily_minutes_array = np.array(daily_minutes)
 
 #おまけ
 #ヒストグラム
-friends_counts = Counter(num_friends)
-xs = range(101) #xの範囲を指定
-ys = [friends_counts[x] for x in xs]
-plt.bar(xs, ys)
-plt.axis([0,101,0,25])
-plt.title('Histogram of Friends Counts')
-plt.xlabel('# of friends')
-plt.ylabel('# of people')
-plt.show()
+def make_friend_counts_histogram(plt):
+	friends_counts = Counter(num_friends)
+	xs = range(101) #xの範囲を指定
+	ys = [friends_counts[x] for x in xs]
+	plt.bar(xs, ys)
+	plt.axis([0,101,0,25])
+	plt.title('Histogram of Friends Counts')
+	plt.xlabel('# of friends')
+	plt.ylabel('# of people')
+	plt.show()
+
+
 #散布図
 plt.scatter(num_friends, daily_minutes)
 plt.show()
 
 #データ数
-num_points = len(num_friends)
-print(num_points)
+num_points = len(num_friends)	#204
 
 
 #最大値と最小値
-largest_value = max(num_friends)
-smallest_value = min(num_friends)
-print(largest_value)
-print(smallest_value)
+largest_value = max(num_friends)	#100
+smallest_value = min(num_friends)	#1
 
 
 #ソートを利用
 sorted_value = sorted(num_friends)
-smallest_value = sorted_value[0]
-second_smallest_value = sorted_value[1]
-second_largest_value = sorted_value[-2]
-print(smallest_value)
-print(second_smallest_value)
-print(second_largest_value)
+smallest_value = sorted_value[0]	#1
+second_smallest_value = sorted_value[1]	#1
+second_largest_value = sorted_value[-2]	#49
 
 
 #平均値
 def mean(x):
 	return sum(x) / len(x)
-
-print(mean(num_friends))
-
 
 #中央値
 def median(v):
@@ -91,24 +87,21 @@ def median(v):
 		hi = sorted_v[midpoint]
 		return (lo + hi) / 2
 
-print(median(num_friends))
-
 
 #分位数
 def quantile(x, p):
 	p_index = int(p * len(x))
 	return sorted(x)[p_index]
-
-print(quantile(num_friends, 0.25))
-print(quantile(num_friends, 0.75))
-
+"""
+quantile(num_friends, 0.25)	#3
+quantile(num_friends, 0.75)	#9
+"""
 
 #最頻値・モード
 def mode(x):
 	counts = Counter(x)
 	return counts.most_common(1)
 
-print(mode(num_friends))
 '''
 collectionsのCounterの中にある。
 何番目かも指定可能。
@@ -132,11 +125,6 @@ def mode_by_myself(x):
 
 	return answer
 
-print(mode_by_myself(num_friends))
-
-
-
-
 
 
 #相関
@@ -144,37 +132,72 @@ print(mode_by_myself(num_friends))
 def data_range(x):
 	return max(x) - min(x)
 
-print(data_range(num_friends))
-
-
-#分散:偏差の二乗の平均
-print(np.var(num_friends_array))
-
-
 #偏差:平均との差
 def de_mean(x):
-	mean = np.mean(x)
-	return x - mean
-#偏差値:平均との差に10をかけて、50を足す
-a = de_mean(num_friends_array) / np.std(num_friends_array) * 10 + 50
-'''printは長いので省略'''
+    x_bar = mean(x)
+    return [x_i - x_bar for x_i in x]
 
+#分散:偏差の二乗の平均
+def variance(x):
+    n = len(x)
+    deviations = de_mean(x)
+    return sum_of_squares(deviations) / (n - 1)
 
 #標準偏差:基本的には分散の平方根
-print(np.std(num_friends_array))
+def standard_deviation(x):
+    return math.sqrt(variance(x))
 
+
+def interquartile_range(x):
+    return quantile(x, 0.75) - quantile(x, 0.25)
 
 #共分散:数値が大きいほど相関がある。マイナスは逆相関
-print(np.cov(num_friends_array, daily_minutes_array))
-'''
-np.cov = [xの分散, 共分散 ] になる
-		 [共分散 , yの分散]
-'''
+def covariance(x, y):
+    n = len(x)
+    return dot(de_mean(x), de_mean(y)) / (n - 1)
 
 #相関係数:共分散を標準偏差で割る。数値が大きいほど相関がある。マイナスは逆相関
-print(np.corrcoef(num_friends_array, daily_minutes_array))
-'''
-np.corroef = [1, 相関係数] になる
-			 [相関係数, 1]
-'''
+def correlation(x, y):
+    stdev_x = standard_deviation(x)
+    stdev_y = standard_deviation(y)
+    if stdev_x > 0 and stdev_y > 0:
+        return covariance(x, y) / stdev_x / stdev_y
+    else: # if no variation, correlation is zero
+
+
+
+
+
+#相関(numpyバージョン)
+
+#分散
+def variance_np(x_array):
+	return np.var(x_array)
+
+#偏差
+def de_mean_np(x_i, x_array):
+	mean = np.mean(x_array)
+	return x - mean
+
+#偏差値
+def standard_score_np(x_array):
+	return de_mean(x_array) / np.std(x_array) * 10 + 50
+
+#標準偏差
+def standard_deviation_np(x_array):
+	return np.std(x_array)
+
+#共分散
+def covariance_np(x_array, y_array):
+	covariance_array = np.cov(x_array, y_array)
+	'''np.cov = [xの分散, 共分散 ]
+				[共分散 , yの分散]'''
+	return covariance_array[0][1]
+
+#相関係数
+def correlation_np(x_array, y_array):
+	correlation_array = np.corrcoef(num_friends_array, daily_minutes_array)
+	'''np.corroef = [1, 相関係数]
+					[相関係数, 1]'''
+	return correlation_array[0][1]
 

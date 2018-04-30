@@ -1,4 +1,4 @@
-from __probability import normal_cdf, inverse_normal_cdf
+from data_science_06 import normal_cdf, inverse_normal_cdf
 import math, random
 import matplotlib as plt
 
