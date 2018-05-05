@@ -123,16 +123,73 @@ def make_scatterplot_matrix():
 
 
 
-#データの型の変換
+#データの整理と変換
 #csv.readerを用いる時にラップしておくことで、エラーを減らす
-def parse_row(input_row, parsers):
-	#複数のパーサーのリストから入力の列ごとに適切なものを利用する Noneはリストに何もしない意
+def parse_row(input_row, parsers):#複数のパーサーのリストから入力の列ごとに適切なものを利用する Noneはリストに何もしない意
 	return [parser(value) if parser is not None else value for value, parser in zip(input_row, parsers)]
 
-def
+def parse_rows_with(reader, parsers):#readerをラップして入力の隠れるにパーサを適用
+	for row in readers:
+		yield parse_row(row, parsers)
+
+#ヘルパー関数：誤ったデータがある場合にerrorではなく、Noneが返るようにする
+def try_or_none(f):
+	def f_or_none(x):
+		try: return f(x)
+		except: return None
+	return f_or_none
+
+#try_or_noneを使えるようにparse_rowを再定義
+def parse_row(input_row, parsers):
+	return [try_or_none(parser)(value) if parser is not None else value for value, parser in zip(input_row, parsers)]
+
+#事例
+data =[]
+
+with open("__comma_delimited_stock_price.csv") as f:
+	reader = csv.reader(f)
+	for line in parse_rows_with(reader, [dateutil.parser.parse, None, float]):
+		data.append(line)
+
+for row in data:
+	if any(x is None for x in row):
+		print(row)
 
 
 
+#csv.DictReaderのヘルパー関数
+def try_parse_field(field_name, parser_dict):
+	parser = parser_dict.get(field_name)#対応する値がなければNoneが返る
+	if parser is not None:
+		return try_or_none(parser)(value)
+	else:
+		return value
+
+def parse_dict(input_dict, parser_dict):
+	return { field_name : try_parse_field(field_name, value, parser_dict) for field_name, value in input_dict.iteritems()}
+
+
+
+#以下のような辞書を扱うことを考える
+#AAPLの終値の最高値を求める
+"""
+data = [{'cloosing_price' : 102.06
+		 'date' : datetime.datetime(2014, 8, 29, 0, 0)
+		 'symbol' : 'AAPL'
+		 #...
+		 }]
+"""
+max_aapl_price = max(row["cloosing_price"] for row in data if row["symbol"] == "AAPL")
+
+#各銘柄に適用することを考える
+#銘柄ごとにグループ化する
+by_symbol = defaultdict(list)#：by_symbol = []
+for row in data:
+	by_symbol[row["symbol"]].append(row)
+#銘柄ごとに、辞書内包を使って最高値をもとめる
+max_price_by_symbol = { symbol : max(row["cloosing_price"]
+									 for row in grouped_rows)
+						for symbol, grouped_rows in by_symbol.iteritems}
 
 
 
