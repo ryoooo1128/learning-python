@@ -30,7 +30,7 @@ def majority_vote(labels):
 
 #分類器を生成
 #ラベル付きデータは(point, label)のペアになっている
-def knn_classfy(k, labeled_points, new_point):
+def knn_classfy(k, labeled_points, new_point):#k近傍法
 	by_distance = sorted(labeled_points, key = lambda point, _: distance(point, new_point))#データポイントから近い順にソート
 	k_nearest_labels = [label for _, label in by_distance[:k]]#近い順にk個取り出す
 	return majority_vote(k_nearest_labels)#多数決を行う
@@ -119,10 +119,10 @@ cities = [(-86.75,33.5666666666667,'Python'),
 
 def plot_cities():
 	#緯度と経度の辞書を作成
-	plot = {"java" : ([], []), "Python" : ([], []), "R" : ([], [])}
+	plots = {"java" : ([], []), "Python" : ([], []), "R" : ([], [])}
 	#マーカーの色と形を指定
 	makers = { "Java" : "o", "Python" : "s", "R" : "^"}
-	colors = { "Java" : "r", "Python" : "b", "R", "g"}
+	colors = { "Java" : "r", "Python" : "b", "R" : "g"}
 
 	for (longitude, latitude), language in cities:
 		plots[language][0].append(longitude)
@@ -140,11 +140,61 @@ def plot_cities():
 	plt.show()
 
 
+#図から場所が近ければ、同じ言語が選択されているように見える
+#よって、近傍値によって予測
+
+#異なるkの値を試す
+#ポイントをそれぞれk近傍法で求めて、正解と比較する
+for k in [1, 3, 5, 7]:
+	num_correct = 0
+
+	for city in cities:
+		location, actual_language = city
+		other_cities = [other_city for other_city in cities if other_city != city]
+
+		preditced_language = knn_classfy(k, other_cities, location)
+
+		if preditced_language == actual_language:
+			num_correct =+ 1
+
+	print(k, "neighbor[s]:", num_correct, "correct out of", len(cities))
+"""
+1 neighbor[s]:40 correct out of 75
+3 neighbor[s]:44 correct out of 75
+5 neighbor[s]:41 correct out of 75
+7 neighbor[s]:35 correct out of 75
+よって３近傍法が最も正確で59％の正解率
+"""
+
+#全体を格子状に分割する
+plots = {"java" : ([], []), "Python" : ([], []), "R" : ([], [])}
+for longitudein in range(-130:-60):
+	for latitude in range(20:55):
+		preditced_language = knn_classfy(k, cities, [longitudein, latitude])
+		plots[preditced_language][0].append(longitudein)
+		plots[preditced_language][1].append(latitude)
 
 
 
+#多次元の場合の近傍法
+def random_point(dim):
+	return random.random() for _ in range(dim)
+
+def random_distance(dim, num_pairs):
+	return [distance(random_point(dim), random_point(dim)) for _ in range(num_pairs)]
 
 
+dimensions = range(1, 101)
+avg_distances = []
+min_distances = []
 
 
+#1から100の各次元で10000個の距離を計算し、平均距離と最低距離を求める
+random.seed(0)
+for dim in dimensions:
+	distances = random_distances(dim, 10000)
+	avg_distances.append(mean(distances))
+	min_distances.append(min(distances))
+
+min_avg_ratio = [min_dist / avg_dist for min_dist, avg_dist in zip(min_distances, avg_distances)]
 
