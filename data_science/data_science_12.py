@@ -196,5 +196,7 @@ for dim in dimensions:
 	avg_distances.append(mean(distances))
 	min_distances.append(min(distances))
 
+#最低値と平均との比
+#高次元になればなった分だけ平均距離は伸び、その差は縮まる
 min_avg_ratio = [min_dist / avg_dist for min_dist, avg_dist in zip(min_distances, avg_distances)]
 
