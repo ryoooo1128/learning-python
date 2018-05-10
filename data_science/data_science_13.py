@@ -36,6 +36,7 @@ def spam_probablility(word_probs, message):
 		if word in message_words:
 			log_prob_if_spam += math.log(prob_if_spam)#eを底とする対数を返す
 			log_prob_if_not_spam += math.log(prob_if_not_spam)
+
 		#メールに単語が現れなかったら、その単語を含まない確率を足す
 		else:
 			log_prob_if_spam += math.log(1.0 - prob_if_spam)
@@ -75,13 +76,13 @@ path = r"/Spam"
 
 data = []
 
-for fn in glob.glob(path):
+for fn in glob.glob(path):#glob.globはワイドカード的に一致するファイル名を返す
 	is_spam = "ham" not in fn
 
 	with open(fn, 'r') as file:
 		for line in file:
 			if line.startwith("Subject:"):
-				subject = re.sub(r"^Subject: ", "", line).strip()
+				subject = re.sub(r"^Subject: ", "", line).strip()#Subject: を分割し、取り除く
 				data.append((subject, is_spam))
 
 random.seed(0)
@@ -91,13 +92,37 @@ classifier = NaiveBayesClassfier()
 classifier.train(train_data)
 
 classified = [(subject, is_spam, classifier.classify(subject)) for subject, is_spam in test_data]
-counts = Counter((is_spam, spam_probablility > 0.5)for _, is_spam, spam_probablility in classified)
+counts = Counter((is_spam, spam_probablility > 0.5) for _, is_spam, spam_probablility in classified)
+"""
+真陽性:101
+偽陽性:33
+真陰性:704
+偽陰性:38
 
-def p_spam_givin_word(word_probs):
+適合率:101/(101+33)=0.75
+再現率:101/(101+38)=0.73
+"""
+
+
+#判別を誤った確認
+#spam_probabilityで昇順にソート
+classified.sort(key=lambda row: row[2])
+#スパムではないメッセージの中で、最もスパムと判別されたものを取り出す
+spammiest_hams = filter(lambda row: not row[1], classified)[-5:]
+#スパムメッセージの中で、最もスパムでないと判別されたものを取り出す
+spammiest_spams = filter(lambda row: row[1], classified)[:5]
+"""
+最もスパムらしい上位２つのスパムらしいものはneeded(スパムよりも77倍)とinsurance(30倍)が含まれていた
+最もハムらしい上位２つは文章が短く学習データになかった
+"""
+
+
+#最もスパムと判別された単語
+def p_spam_givin_word(word_probs):#ベイズの定理を用いて、確率p(スパムである/単語が含まれる)を求める
 	word, prob_if_spam, prob_if_not_spam = word_probs
 	return prob_if_spam / (prob_if_spam + prob_if_not_spam)
 
-words = sorted(classifier.word_probs, key=p_spam_givin_word)
+words = sorted(classifier.word_probs, key = p_spam_givin_word)
 spammiest_words = words[-5:]#money, systemworks, rates, sale, year
 hamminist_words = word[:5]#spambayes, users, razor, zzzzteana, sadev
 
