@@ -127,3 +127,13 @@ spammiest_words = words[-5:]#money, systemworks, rates, sale, year
 hamminist_words = word[:5]#spambayes, users, razor, zzzzteana, sadev
 
 
+"""
+今回の処理では類似の単語(例: cheapとcheapest)を考慮していない
+stemmer関数を追加して、同類の単語に判別することもできる
+例: def drop_final_s(word):
+	   return re.sub("s$", "", word)
+
+しかし良いstemmerは難しいのでポーターのstemmerを利用する(https://tartarus.org/martin/PorterStemmer/)
+"""
+
+
