@@ -70,5 +70,25 @@ r_squared(alpha, beta, num_friends_good, daily_minutes_good)#0.329
 #R^2は大きいほど良いモデルと言える　今回は悪くはないが、改良が必要
 
 
+
 #勾配下降法
+#θ=[α, β]とする
+def squared_error(x_i, y_i, theta):
+	alpha, beta = theta
+	return error(alpha, beta, x_i, y_i) ** 2
+
+def squared_error_gradient(x_i, y_i, theta):
+	alpha, beta = theta
+	return [-2 * error(alpha, beta, x_i, y_i),#αの偏導関数
+			-2 * error(alpha, beta, x_i, y_i) * x_i]#βの偏導関数
+
+random.seed(0)
+thera = [random.random(), random.random()]
+alpha, beta = minimize_stochastic(squared_error, squared_error_gradient, num_friends_good, daily_minutes_good, theta, 0.0001)
+
+print(alpha, beta)
+#α=22.93 β=0.905
+
+#最尤推定において重要
+
 
