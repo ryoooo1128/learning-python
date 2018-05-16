@@ -153,11 +153,24 @@ classify(tree, {'level' : 'Senior'})#False
 
 
 
-#ランダムフォレスト
+#ランダムフォレスト：決定木は過学習になりやすいので、防ぐために多くの決定木を多く作って多数決で決定する
+def forest_classify(trees, input):
+	votes = [classify(tree, input) for tree in trees]
+	vote_counts = Counter(votes)
+
+	return vote_counts.most_common(1)[0][0]
 
 
+#ブートストラップで決定木を作成する：ブーストトラップアグリゲーティング、またはバギング
+#分割する母体がすでに少なくなっているなら、それらを全部つかう
+if len(split_candidates) <= self.num_split_candidates:
+	sample_split_candidates = split_candidates
+#そうでなければ無作為に抽出する
+else:
+	sample_split_candidates = random.sample(split_candidates, self.num_split_candidates)
 
+#この中から最も良い選択をする
+best_attribute = min(sample_split_candidates, key = partial(partition_entropy_by, inputs))
 
-
-
+partitions = partition_by(inputs, best_attribute)
 
