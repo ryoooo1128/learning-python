@@ -11,7 +11,7 @@ user = [[0, "Hero", 0],
 		[3, "Chi", 3]]
 """
 以下のSQLを作成する	
-CREAT TABLE users (
+CREATE TABLE users (
 	user_id INT NOT NULL,
 	name VARCHAR(200),
 	num_friends INT);
