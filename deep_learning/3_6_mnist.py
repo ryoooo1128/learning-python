@@ -89,8 +89,8 @@ accuracy_cnt = 0
 for i in range(0, len(x), batch_size):
 	x_batch = x[i:i + batch_size]
 	y_batch = predict(network, x_batch)
-	p = np.argmax(y_batch, axis = 1)
-	accuracy_cnt += np.sum(p == t[i:i + batch_size])
+	p = np.argmax(y_batch, axis = 1)#argmaxは最大値のインデックスを返す・
+	accuracy_cnt += np.sum(p == t[i:i + batch_size])#np.sumはTrueとFalseを0と1に変換して合計
 '''
 x[i:i+n]はiからi+n番目までのデータを取り出す　この場合はx[1:100], x[100:200]
 axis=1は軸　この場合は1次元目の要素ごとに取り出している
@@ -111,3 +111,4 @@ print(x[0].shape) #(784,)
 print(W1.shape)   #(784, 50)
 print(W2.shape)   #(50, 100)
 print(W3.shape)   #(100, 10)
+
